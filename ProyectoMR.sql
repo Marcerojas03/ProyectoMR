@@ -30,7 +30,7 @@ go
 
 
 insert into Clientes
-select * from Clientes$
+select * from Clientes
 
 
 
@@ -164,13 +164,12 @@ total money
 
 
 --se insertaron tablas en excel 
-select * from Categorias$
-select * from Clientes$
-select * from Compras$
-select * from Prductos$
-select * from Prductos$COLUMNAS_PARA_PRODUCTOS
-select * from Proveedores$
-select * from Suministros$
+select * from Categorías
+select * from Clientes
+select * from Compras
+select * from Productos
+select * from Proveedores
+select * from Suministros
 
 
 
@@ -210,8 +209,8 @@ go
 
 --SECUNDARIAS
 alter table dbo.Compras
-add constraint FK_DNI FOREIGN key (DNI)
-references dbo.Clientes (DNI)
+add constraint FK_IdCliente FOREIGN key (IdCliente)
+references dbo.Clientes (IdCliente)
 go
 
 
@@ -228,8 +227,8 @@ references dbo.Categorías (Categoría)
 go
 
 alter table dbo.Productos
-add constraint FK_NIF FOREIGN key (NIF)
-references dbo.Proveedores (NIF)
+add constraint FK_IdProveedor FOREIGN key (IdProveedor)
+references dbo.Proveedores (IdProveedor)
 go
 
 alter table dbo.Suministros
