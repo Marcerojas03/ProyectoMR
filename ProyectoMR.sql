@@ -298,13 +298,14 @@ WHERE  Idsum='36'
 
 
 --crear un procedimiento 
---ver los clientes que mas compraron (opcional por fecha)
+--ver los 5 clientes que mas compraron (opcional por fecha)
 select * from dbo.Compras
 
 
-SELECT TOP 5 ID, CANTIDAD, IMPORTE 
+SELECT TOP 5 IdCliente, fecha, sum(compras.Importe) as total
 FROM COMPRAS
-ORDER BY CANTIDAD DESC
+group by IdCliente, fecha
+ORDER BY total DESC
 
 
 
@@ -312,7 +313,7 @@ ORDER BY CANTIDAD DESC
 
 --crear un procedimiento
 --VER LAS COMPRAS DE SUMINISTROS ENTRE DEL DIA 24-10-2022 AL 26-10-2022 
-SELECT Idsum, sku, categoria, cantidad, total, [fecha de compra] 
+SELECT Idsum, categoria, cantidad, total, [fecha de compra] 
 FROM Suministros
 WHERE [fecha de compra] between '20221024' AND '20221026'
 ORDER BY idSum
@@ -322,18 +323,17 @@ ORDER BY idSum
 USE ProyectoMR;
 GO
 
-IF OBJECT_ID('Suministros$', 'P') IS NOT NULL
-DROP PROC Suministros$,ComprasporFecha;
+IF OBJECT_ID('Suministros', 'P') IS NOT NULL
+DROP PROC ComprasporFecha;
 GO
 
 create proc ComprasporFecha
-@fecha I as varchar (max)
-@fecha F
+@fecha as varchar(max)
 as
 begin
 
 SELECT [fecha de compra],COUNT(*) AS cantidadtotal 
-FROM Suministros$
+FROM Suministros
 WHERE [fecha de compra] between '20221024' AND '20221026'
 group by [fecha de compra]
 ORDER BY [fecha de compra]
@@ -342,8 +342,10 @@ RETURN;
 END
 GO
 
+execute ComprasporFecha '20221024'
 
 
+---------------------------------------------------------
 --Insertar un nuevo cliente si no tiene compras anteriores
 select * from clientes
 select * from Compras
@@ -352,32 +354,30 @@ select * from Compras
 Use ProyectoMR
 go
 
-if OBJECT_ID ('Compras.IDcero', Idcero) is not null 
-drop proc Compras.Idcero;
+if OBJECT_ID ('Compras.IDcero', 'P') is not null 
+drop proc ComprasIdcero;
 go
 
-create proc Compras.Idcero
-@dni as nvarchar(max)
+create proc ComprasIdcero
+@IdCliente as nvarchar(max)
 
 as
 begin
 
-INSERT INTO Clientes (DNI, Nombre, Apellido, [E-mail], Telefono) 
+INSERT INTO Clientes (IdCliente, Nombre, Apellido, "E-Mail", Telefono) 
 VALUES ('Y6221149P', 'Marcela', 'Rojas', 'marcerojas03@gmail.com', '622744124')
-
-where dni = @dni
-group by 
-
 return
 
 end 
 go
 
 
-Select cl.dni, cl.nombre, cl.apellido, co.id
-inner join dbo.Clientes as Cl
-FROM dbo.Compras AS Co
-  ON cl.dni = co.dni
+
+
+Select cl.IdCliente, cl.nombre, cl.apellido, co.idCompras
+FROM Compras AS Co
+	 join Clientes as cl
+  ON cl.IdCliente = co.IdCliente
 
 
 
